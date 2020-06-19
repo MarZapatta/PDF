@@ -1,3 +1,4 @@
+rm(list = ls())
 getwd()
 setwd("E:/Escritorio/RRL/")
 #### Ejemplo 1 RLSimple####
@@ -79,45 +80,55 @@ summary(modelo)
 
 #### Regresion Logistica #### 
 # https://www.kaggle.com/ludobenistant/hr-analytics
-# Sale error cuando se ingrsa a la pagina.
-# datos <- read.csv("HumanResourcesAnalytics.csv",T)
-# muestra <- dim(datos)[1]
-# datos <- datos[sample(muestra,100,replace=TRUE),]
-# class(datos)
-# str(datos)
-# head(datos)
-# #View datos
-# conames(datos)=c("nivel_satisfaccion","ultima_evaluacion","numero_proyectos","promedio_horas_mensuales","antiguedad"
-#                  ,"accidente","abandona","promocionado","departamento","salario")
-# datos.modelo <- subsel(datos,select=c(abandona,nivel_satisfaccion,ultima_evaluacion))
-# datos.modelo$abandona <- factor(datos.modelo$abandona)
-# head(datos.modelo)
-# plot(datos, modelo$nivel_satisfaccion,datos.modelo$abandona)
-# 
-# table(datos, modelo$abandona)
-# summary(datos, modelo$nivel_satisfaccion)
-# summary(datos, modelo$ultima_evaluacion)
-# 
-# modelo.logit <- glm(abandona ~ultima_evaluacion + nivel_satisfaccion, data=datos.modelo, family="binomial")
-# summary(modelo.logit)
-# 
-# exp(coefficients(modelo.logit))
-# 
-# log.odds <- predict(modelo.logit, data.frame(nivel_satisfaccion=0.6,
-#                                              ultima_evaluacion=0.75))
-# log.odds
-# exp(log.odds)/(1-exp(log.odds))
-# 
-# q <- seq(from=0, to=20,by=0.1)
-# y <- 500+0.4*(q-10)*3
-# noise <- rnorm(lenght(q), mean=10, sd=80)
-# noisy.y <- y+noise
-# plot(q,noisy.y, col='deepskyblue4',xlab='q' , main='Observeddata')
-# lines(q,y,col='firebrick1',lwd=3)
-# model <- lm(noisy.y ~ poly(q,3))
-# 
-# confint(model, level=0.95)
+# el url falla pero se descargo el archivo csv por el foro
+datos <- read.csv("HumanResourcesAnalytics.csv",T)
+muestra <- dim(datos)[1]
+datos <- datos[sample(muestra,100,replace=TRUE),]
+class(datos)
+str(datos)
+head(datos)
+#View datos
+colnames(datos)=c("nivel_satisfaccion","ultima_evaluacion","numero_proyectos","promedio_horas_mensuales","antiguedad",
+                 "accidente","abandona","promocionado","departamento","salario")
+datos.modelo <- subset(datos,select=c(abandona,nivel_satisfaccion,ultima_evaluacion))
+datos.modelo$abandona <- factor(datos.modelo$abandona)
+head(datos.modelo)
+plot(datos.modelo$nivel_satisfaccion,datos.modelo$abandona)
 
+table(datos.modelo$abandona)
+summary(datos.modelo$nivel_satisfaccion)
+summary(datos.modelo$ultima_evaluacion)
+
+modelo.logit <- glm(abandona ~ultima_evaluacion + nivel_satisfaccion, data=datos.modelo, family="binomial")
+summary(modelo.logit)
+
+exp(coefficients(modelo.logit))
+
+log.odds <- predict(modelo.logit, data.frame(nivel_satisfaccion=0.6,
+                                             ultima_evaluacion=0.75))
+log.odds
+exp(log.odds)/(1-exp(log.odds))
+
+q <- seq(from=0, to=20,by=0.1)
+y <- 500+0.4*(q-10)*3
+noise <- rnorm(length(q), mean=10, sd=80)
+noisy.y <- y+noise
+plot(q,noisy.y, col='deepskyblue4',xlab='q' , main='Observeddata')
+lines(q,y,col='firebrick1',lwd=3)
+model <- lm(noisy.y ~ poly(q,3))
+
+confint(model, level=0.95)
+
+#### Regresion de Poisson ####
+NumResueltos <- c(0,1,2,1,5,3,2,5,7,8,12,13,12,11,10,12,10,15)
+HorasClase <- c(1,3,4,1,3,5,1,3,5,2,3,5,0,3,5,4,3,5)
+
+Nota <- c(0,2,3,0,4,3,1,3,4,3,4,5,4,5,4,5,5,5)
+tabla <- data.frame(NumResueltos, HorasClase, Nota)
+
+regPoisson <- glm(Nota~NumResueltos+HorasClase, data=tabla,family=poisson())
+summary(regPoisson)
+predict(regPoisson, type="response")
 
 
 
